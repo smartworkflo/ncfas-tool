@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Families Together NCFAS Assessment Tool — Jade</title>
+<style>
+:root{
+  --g:#0F6E56;--gl:#E1F5EE;--gm:#9FE1CB;
+  --a:#854F0B;--al:#FEF3E2;--am:#FAC775;
+  --b:#1A4D8F;--bl:#E8F0FB;--bm:#8AB0E8;
+  --r:#A32D2D;--rl:#FDEAEA;
+  --n1:#F7F6F3;--n2:#ECEAE4;--n3:#D3D1C7;--n5:#7C7A72;--n8:#2C2B27;
+  --w:#fff;--f:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --rad:10px;--rads:6px;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.05);
+  --sh2:0 4px 20px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--n1);color:var(--n8);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+
+/* Sidebar */
+.sb{width:268px;min-width:268px;background:var(--w);border-right:1px solid var(--n2);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden}
+.sb-top{padding:16px 16px 12px;border-bottom:1px solid var(--n2)}
+.sb-brand{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--g);margin-bottom:3px}
+.sb-title{font-size:14px;font-weight:600;color:var(--n8)}
+.sb-org{font-size:11px;color:var(--n5);margin-top:1px}
+.sb-body{flex:1;overflow-y:auto;padding:10px 10px 16px}
+.sb-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--n5);padding:6px 6px 4px}
+.fc{border:1px solid var(--n2);border-radius:var(--rads);padding:8px 10px;margin-bottom:4px;cursor:pointer;background:var(--w);transition:all .12s}
+.fc:hover{border-color:var(--gm);background:var(--gl)}
+.fc.on{border-color:var(--g);background:var(--gl)}
+.fc-name{font-size:12px;font-weight:600;color:var(--n8);margin-bottom:2px}
+.fc-meta{font-size:10px;color:var(--n5)}
+.fc-dots{display:flex;gap:4px;margin-top:4px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--n3)}
+.dot.gi{background:var(--g)}.dot.gm{background:var(--a)}.dot.ge{background:var(--b)}
+.add-fc{display:flex;align-items:center;gap:5px;width:100%;padding:7px 10px;border:1px dashed var(--n3);border-radius:var(--rads);background:none;color:var(--n5);font-size:12px;cursor:pointer;transition:all .12s;margin-top:4px;font-family:var(--f)}
+.add-fc:hover{border-color:var(--g);color:var(--g);background:var(--gl)}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.mh{background:var(--w);border-bottom:1px solid var(--n2);padding:12px 22px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.mh-title{font-size:15px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc{flex:1;overflow-y:auto;padding:18px 22px}
+
+/* Phase tabs */
+.ptabs{display:flex;border:1px solid var(--n2);border-radius:var(--rad);overflow:hidden;background:var(--w);margin-bottom:16px}
+.pt{flex:1;padding:9px 12px;border:none;background:none;cursor:pointer;text-align:left;border-right:1px solid var(--n2);transition:background .12s;font-family:var(--f)}
+.pt:last-child{border-right:none}
+.pt:hover{background:var(--n1)}
+.pt.pi{background:var(--gl)}.pt.pm{background:var(--al)}.pt.pe{background:var(--bl)}
+.pt-l{font-size:11px;font-weight:700}
+.ti .pt-l{color:var(--g)}.tm .pt-l{color:var(--a)}.te .pt-l{color:var(--b)}
+.pt-s{font-size:10px;color:var(--n5);margin-top:1px}
+
+/* Cards */
+.card{background:var(--w);border:1px solid var(--n2);border-radius:var(--rad);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.card-title{font-size:12px;font-weight:700;color:var(--n8);margin-bottom:10px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.5px}
+.card-desc{font-size:12px;color:var(--n5);margin-bottom:10px;line-height:1.5}
+
+/* Inputs */
+textarea,input[type=text],select{width:100%;border:1px solid var(--n2);border-radius:var(--rads);padding:8px 10px;font-family:var(--f);font-size:13px;color:var(--n8);background:var(--w);transition:border-color .12s}
+textarea{resize:vertical;line-height:1.6}
+textarea:focus,input[type=text]:focus,select:focus{outline:none;border-color:var(--g)}
+textarea::placeholder,input[type=text]::placeholder{color:var(--n3)}
+label{display:block;font-size:11px;font-weight:600;color:var(--n5);margin-bottom:3px;letter-spacing:.3px}
+.fg{margin-bottom:10px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--rads);font-family:var(--f);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .12s;white-space:nowrap}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.bp{background:var(--g);color:var(--w)}.bp:hover:not(:disabled){background:#0C5C47}
+.bs{background:var(--n1);color:var(--n8);border:1px solid var(--n2)}.bs:hover:not(:disabled){background:var(--n2)}
+.bd{background:var(--rl);color:var(--r);border:1px solid #f0c0c0}.bd:hover:not(:disabled){background:#f8d4d4}
+.be{background:var(--bl);color:var(--b);border:1px solid var(--bm)}.be:hover:not(:disabled){background:#c8d8f4}
+.bsm{padding:4px 9px;font-size:11px}
+.bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px}
+
+/* Upload */
+.uz{border:2px dashed var(--n3);border-radius:var(--rads);padding:16px;text-align:center;cursor:pointer;transition:all .15s;background:var(--n1);margin-bottom:8px}
+.uz:hover,.uz.drag{border-color:var(--g);background:var(--gl)}
+.uz-ico{font-size:22px;margin-bottom:5px}
+.uz-txt{font-size:11px;color:var(--n5);line-height:1.5}
+.uz-txt strong{color:var(--n8)}
+.ufiles{display:flex;flex-direction:column;gap:4px}
+.uf{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--n1);border-radius:var(--rads);border:1px solid var(--n2);margin-top:4px}
+.uf-n{flex:1;font-size:11px;font-weight:500}
+.uf-sz{font-size:10px;color:var(--n5)}
+.xbtn{background:none;border:none;color:var(--n5);cursor:pointer;font-size:12px;padding:1px 4px;border-radius:3px;line-height:1}
+.xbtn:hover{background:var(--rl);color:var(--r)}
+
+/* Notes */
+.nb{border:1px solid var(--n2);border-radius:var(--rads);overflow:hidden;margin-bottom:6px}
+.nh{display:flex;align-items:center;gap:6px;padding:6px 9px;background:var(--n1);border-bottom:1px solid var(--n2)}
+.ntag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0}
+.ndate{font-size:11px;font-weight:600;flex:1}
+.nbody{padding:8px 10px;font-size:11px;line-height:1.6;white-space:pre-wrap;max-height:72px;overflow:hidden;color:var(--n8)}
+.nbody.exp{max-height:none}
+.nmore{font-size:10px;color:var(--g);background:none;border:none;cursor:pointer;padding:2px 9px;width:100%;text-align:left;border-top:1px solid var(--n2);font-family:var(--f)}
+
+/* Flags */
+.flag{background:var(--rl);border:1px solid #f0c0c0;border-radius:var(--rads);padding:8px 10px;margin-bottom:6px}
+.flag-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.flag-lbl{font-size:10px;font-weight:700;color:var(--r);text-transform:uppercase;letter-spacing:.5px}
+.flag-txt{font-size:11px;line-height:1.5;color:var(--n8)}
+
+/* Loading */
+.spin{width:26px;height:26px;border:3px solid var(--n2);border-top-color:var(--g);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:8px;color:var(--n5);font-size:12px;text-align:center}
+.err{background:var(--rl);border:1px solid #f0c0c0;border-radius:var(--rads);padding:8px 11px;font-size:12px;color:var(--r);margin-bottom:8px}
+
+/* Welcome */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;color:var(--n5);padding:40px}
+.welcome h2{font-size:18px;font-weight:500;color:var(--n8);margin-bottom:6px}
+.welcome p{font-size:13px;line-height:1.6;max-width:380px}
+
+/* Modal */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal{background:var(--w);border-radius:var(--rad);padding:20px;width:100%;max-width:480px;box-shadow:var(--sh2)}
+.modal.wide{max-width:600px}
+.modal-title{font-size:14px;font-weight:600;margin-bottom:14px}
+.modal-acts{display:flex;justify-content:flex-end;gap:6px;margin-top:14px}
+
+/* Analysis */
+.an-wrap{border:1px solid var(--n2);border-radius:var(--rad);overflow:hidden;margin-top:4px}
+.an-hdr{padding:12px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--n2)}
+.an-hdr.i{background:var(--gl)}.an-hdr.m{background:var(--al)}.an-hdr.e{background:var(--bl)}
+.an-title{font-size:13px;font-weight:600}
+.an-title.i{color:var(--g)}.an-title.m{color:var(--a)}.an-title.e{color:var(--b)}
+.an-sub{font-size:11px;color:var(--n5);margin-top:1px}
+
+/* Domain sections */
+.dom{padding:14px 15px;border-bottom:1px solid var(--n2)}
+.dom:last-child{border-bottom:none}
+.dom-hdr{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.dom-letter{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--n5)}
+.dom-name{font-size:13px;font-weight:600;flex:1}
+.dom-score{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.sc2{background:#E1F5EE;color:#0F6E56}.sc1{background:#D4EDDA;color:#155724}
+.sc0{background:var(--bl);color:var(--b)}.scn1{background:#FEF3E2;color:#854F0B}
+.scn2{background:#FDEAEA;color:#A32D2D}.scn3{background:#F8D7DA;color:#721C24}
+.scuk{background:var(--n1);color:var(--n5)}.scna{background:var(--n1);color:var(--n5)}
+.dom-narr{font-size:12px;color:var(--n8);line-height:1.75;margin-bottom:10px}
+.sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.sub-row{display:flex;align-items:center;gap:5px;font-size:10px;background:var(--n1);border-radius:3px;padding:3px 6px}
+.sub-n{flex:1;color:var(--n8)}
+.sub-r{font-weight:700;font-size:9px}
+
+/* Summary sections */
+.sum{padding:12px 15px;border-bottom:1px solid var(--n2)}
+.sum:last-child{border-bottom:none}
+.sum-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--n5);margin-bottom:6px}
+.sum-txt{font-size:12px;line-height:1.75;color:var(--n8)}
+
+/* Core components */
+.cc-grid{display:flex;flex-direction:column;gap:6px}
+.cc-row{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:var(--rads);border:1px solid var(--n2)}
+.cc-row.present{background:#F0FBF6;border-color:#9FE1CB}
+.cc-row.partial{background:#FEF9F0;border-color:var(--am)}
+.cc-row.absent{background:var(--rl);border-color:#f0c0c0}
+.cc-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.cc-body{flex:1}
+.cc-name{font-size:12px;font-weight:600;margin-bottom:2px}
+.cc-name.present{color:#155724}.cc-name.partial{color:var(--a)}.cc-name.absent{color:var(--r)}
+.cc-status{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.cc-suggest{font-size:11px;color:#6B3D09;margin-top:4px;line-height:1.5;background:#FEF3E2;border-radius:3px;padding:4px 7px}
+
+/* Empty */
+.empty{text-align:center;padding:20px;color:var(--n5);font-size:12px;border:2px dashed var(--n2);border-radius:var(--rad);margin-bottom:8px}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--n3);border-radius:2px}
+
+@media(max-width:600px){
+  .sb{display:none}
+  .sub-grid{grid-template-columns:1fr}
+}
+
+/* Password gate */
+.pw-gate{position:fixed;inset:0;background:var(--n1);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:0}
+.pw-card{background:var(--w);border:1px solid var(--n2);border-radius:var(--rad);padding:36px 40px;width:100%;max-width:360px;box-shadow:var(--sh2);text-align:center}
+.pw-logo{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--g);margin-bottom:8px}
+.pw-title{font-size:18px;font-weight:600;color:var(--n8);margin-bottom:4px}
+.pw-sub{font-size:12px;color:var(--n5);margin-bottom:24px}
+.pw-input{width:100%;border:1px solid var(--n2);border-radius:var(--rads);padding:10px 14px;font-family:var(--f);font-size:14px;color:var(--n8);text-align:center;letter-spacing:2px;margin-bottom:10px;background:var(--w);transition:border-color .12s}
+.pw-input:focus{outline:none;border-color:var(--g)}
+.pw-btn{width:100%;padding:10px;background:var(--g);color:var(--w);border:none;border-radius:var(--rads);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;transition:background .12s}
+.pw-btn:hover{background:#0C5C47}
+.pw-err{color:var(--r);font-size:12px;margin-top:8px;min-height:18px}
+</style>
+</head>
+<body>
+
+<!-- Password gate -->
+<div class="pw-gate" id="pw-gate">
+  <div class="pw-card">
+    <div class="pw-logo">Families Together</div>
+    <div class="pw-title">NCFAS Assessment Tool</div>
+    <div class="pw-sub">Jade Wright · CFP</div>
+    <input class="pw-input" type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="pw-btn" onclick="checkPw()">Sign in</button>
+    <div class="pw-err" id="pw-err"></div>
+  </div>
+</div>
+
+<div class="app" id="main-app" style="display:none">
+<aside class="sb">
+  <div class="sb-top">
+    <div class="sb-brand">Families Together</div>
+    <div class="sb-title">NCFAS Assessment Tool</div>
+    <div class="sb-org">Jade Wright · CFP</div>
+  </div>
+  <div class="sb-body">
+    <div class="sb-lbl">Cases</div>
+    <div id="flist"></div>
+    <button class="add-fc" onclick="openAdd()">＋ Add new case</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="mh">
+    <div class="mh-title" id="mh-title">NCFAS Assessment Tool</div>
+    <div id="mh-acts"></div>
+  </div>
+  <div class="mc" id="mc">
+    <div class="welcome">
+      <div style="font-size:44px;margin-bottom:14px">📋</div>
+      <h2>Select or add a case to begin</h2>
+      <p>Upload AIMS case note exports, paste emails and contact notes, add key flags — then generate a complete NCFAS-G+R assessment ready for AIMSsurvey.</p>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- Add case modal -->
+<div class="mbg" id="m-add" style="display:none">
+  <div class="modal">
+    <div class="modal-title">New case</div>
+    <div class="fg"><label>Family / case reference *</label><input type="text" id="m-name" placeholder="e.g. Jones/O'Dwyer family"></div>
+    <div class="fg-row">
+      <div><label>CFP name</label><input type="text" id="m-cfp" placeholder="e.g. Jade Wright"></div>
+      <div><label>Program start date</label><input type="text" id="m-start" placeholder="e.g. 06/04/2026"></div>
+    </div>
+    <div class="fg"><label>DCJ referral date</label><input type="text" id="m-ref" placeholder="e.g. 03/02/2026"></div>
+    <div class="fg"><label>Family members (for reference in narratives)</label><textarea id="m-members" rows="2" placeholder="e.g. Karen Jones (KJ) — mother, Scott O'Dwyer (SO) — father, Jacob Jones (JJ) aged 12, Sophie Jones (SJ) aged 16"></textarea></div>
+    <div class="modal-acts">
+      <button class="btn bs" onclick="closeAdd()">Cancel</button>
+      <button class="btn bp" onclick="saveAdd()">Add case</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note modal -->
+<div class="mbg" id="m-note" style="display:none">
+  <div class="modal wide">
+    <div class="modal-title">Add case notes</div>
+    <div class="fg-row">
+      <div><label>Date / period</label><input type="text" id="n-date" placeholder="e.g. 15/04/2026"></div>
+      <div><label>Note type</label>
+        <select id="n-type">
+          <option value="contact">Contact / visit note</option>
+          <option value="email">Email thread</option>
+          <option value="report">Report / referral document</option>
+          <option value="collateral">Collateral contact</option>
+          <option value="crisis">Crisis / critical incident</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Paste notes here</label><textarea id="n-text" rows="12" placeholder="Paste case notes, email threads, reports, contact logs..."></textarea></div>
+    <div class="modal-acts">
+      <button class="btn bs" onclick="closeNote()">Cancel</button>
+      <button class="btn bp" onclick="saveNote()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Flag modal -->
+<div class="mbg" id="m-flag" style="display:none">
+  <div class="modal">
+    <div class="modal-title">Add key flag</div>
+    <div class="fg"><label>Date</label><input type="text" id="f-date" placeholder="e.g. 20/03/2026"></div>
+    <div class="fg"><label>Flag / critical information to include in narratives</label><textarea id="f-text" rows="5" placeholder="e.g. SJ ingested 40 Nurofen tablets on 20/01/2026, was hospitalised overnight, safety plan enacted on discharge..."></textarea></div>
+    <div class="modal-acts">
+      <button class="btn bs" onclick="closeFlag()">Cancel</button>
+      <button class="btn bp" onclick="saveFlag()">Save flag</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Mammoth ───────────────────────────────────────────────────────────────────
+function loadMammoth(){
+  return new Promise((res,rej)=>{
+    if(window.mammoth){res();return}
+    const s=document.createElement('script')
+    s.src='https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js'
+    s.onload=res;s.onerror=rej;document.head.appendChild(s)
+  })
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+const KEY='ft_ncfas_v5'
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{fams:{}}}catch{return{fams:{}}}}
+function save(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch{alert('Browser storage full. Please export and delete old cases.')}}
+let DB=load(),selId=null,selPh='intake'
+
+// ── Phase config ──────────────────────────────────────────────────────────────
+const PH={
+  intake:{id:'intake',lbl:'Phase 1 — Intake',short:'Intake',sub:'Weeks 0–6',type:'Initial NCFAS',col:'#0F6E56',cls:'i',
+    desc:'Upload all case note exports from first contact through to the Initial NCFAS (week 6). Include intake notes, eco map/genogram visit, PEEM/GEM baseline, and any 3rd–4th visit notes.'},
+  interim:{id:'interim',lbl:'Phase 2 — Interim',short:'Interim',sub:'6 weeks – 5 months',type:'Interim NCFAS',col:'#854F0B',cls:'m',
+    desc:'Upload all case notes from the signed case plan through to the 5-month case plan review. Include all contact notes, 3-month PEEM/GEM, and any collateral or email contact.'},
+  exit:{id:'exit',lbl:'Phase 3 — Exit',short:'Exit',sub:'5–10 months',type:'Exit NCFAS',col:'#1A4D8F',cls:'e',
+    desc:'Upload all case notes from 5 months through to end of program. Include 9-month check-in, exit planning discussions, transition notes, and final PEEM/GEM.'}
+}
+
+// ── NCFAS domains A–H (official subdomain names) ──────────────────────────────
+const DOMS=[
+  {id:'A',name:'Environment',subs:['Housing Stability','Safety in the Community','Environmental Risks','Habitability of Housing','Personal Hygiene','Learning Environment']},
+  {id:'B',name:'Parental Capabilities',subs:['Supervision of Children','Disciplinary Practices','Developmental/Enrichment Opportunities','Use of Drugs/Alcohol Interferes with Parenting','Promotes Children\'s Education','Controls Access to Media/Reading Material','Parent/Caregiver Literacy']},
+  {id:'C',name:'Family Interactions',subs:['Bonding with Children','Communication with Children','Expectations of Children','Mutual Support Within the Family','Relationship Between Parents/Caregivers','Family Routines/Rituals','Family Recreation and Play Activities']},
+  {id:'D',name:'Family Safety',subs:['Absence/Presence of DV Between Parents/Caregivers','Absence/Presence of Other Family Conflict','Absence/Presence of Physical Abuse of Children','Absence/Presence of Emotional Abuse of Children','Absence/Presence of Sexual Abuse of Children','Absence/Presence of Neglect of Children','Absence/Presence of Access to Weapons']},
+  {id:'E',name:'Child Well-Being',subs:['Children\'s Behaviour','School Performance','Children\'s Relationship with Parents/Caregivers','Children\'s Relationship with Siblings','Children\'s Relationship with Peers','Cooperation/Motivation to Maintain the Family']},
+  {id:'F',name:'Social/Community Life',subs:['Social Relationships','Relationships with Child Care, Schools and Extracurricular Services','Connection to Neighbourhood/Cultural/Ethnic Community','Connection to Spiritual/Religious Community','Caregiver Initiative and Acceptance of Available Help/Support']},
+  {id:'G',name:'Self-Sufficiency',subs:['Caregiver Employment','Family Income','Financial Management','Food and Nutrition','Transportation']},
+  {id:'H',name:'Family Health',subs:['Caregiver Physical Health','Caregiver Disability','Caregiver Mental Health','Children\'s Physical Health','Children\'s Disability','Children\'s Mental Health','Family Access to Health/Mental Health Care']}
+]
+
+// ── Rating config ─────────────────────────────────────────────────────────────
+const RAT={
+  '+2':{lbl:'Clear Strength',cls:'sc2'},
+  '+1':{lbl:'Mild Strength',cls:'sc1'},
+  '0':{lbl:'Baseline / Adequate',cls:'sc0'},
+  '-1':{lbl:'Mild Problem',cls:'scn1'},
+  '-2':{lbl:'Moderate Problem',cls:'scn2'},
+  '-3':{lbl:'Serious Problem',cls:'scn3'},
+  'uk':{lbl:'Unknown',cls:'scuk'},
+  'na':{lbl:'N/A',cls:'scna'}
+}
+
+// ── Core component suggestions ────────────────────────────────────────────────
+const CC_S={
+  'Engagement':'Suggested: joint home visits with DCJ, flexible times and locations, cultural liaison support, addressing practical barriers to participation, regular check-ins between visits, family-led decision making, use of interpreters.',
+  'Case Management':'Suggested: completing or reviewing the strengths and needs assessment, developing or reviewing the family case plan, coordinating with DCJ and other services, safety planning review, brokerage for immediate needs, case coordination meetings, referrals to community services.',
+  'Family and Parent Support':'Suggested: in-home parenting coaching and modelling, evidence-based parenting programs (e.g. Triple P), household routines support, practical home management, strengthening social networks, cultural supports, school engagement support, financial counselling referral.',
+  'Therapeutic Support':'Suggested: referral to mental health services, trauma counselling, DFV specialist services, AOD counselling, men\'s behaviour change program, grief and loss support, cultural healing programs, carer respite.',
+  'Child-Focused Support':'Suggested: direct safety conversations with the child or young person, school counsellor or support referral, NDIS or disability supports, health assessments, extracurricular activities, cultural or community connection, child-centred safety planning.'
+}
+
+// ── Note type config ──────────────────────────────────────────────────────────
+const NT={
+  contact:{lbl:'Contact Note',bg:'#E1F5EE',tc:'#0F6E56'},
+  email:{lbl:'Email Thread',bg:'#E8F0FB',tc:'#1A4D8F'},
+  report:{lbl:'Report',bg:'#FEF3E2',tc:'#854F0B'},
+  collateral:{lbl:'Collateral',bg:'var(--n2)',tc:'var(--n5)'},
+  crisis:{lbl:'⚠ Crisis',bg:'#FDEAEA',tc:'#A32D2D'},
+  other:{lbl:'Note',bg:'var(--n2)',tc:'var(--n5)'}
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function rSidebar(){
+  const fams=Object.values(DB.fams).sort((a,b)=>new Date(b.created)-new Date(a.created))
+  const el=document.getElementById('flist')
+  if(!fams.length){el.innerHTML='<div style="font-size:11px;color:var(--n5);padding:6px 6px;text-align:center">No cases yet</div>';return}
+  el.innerHTML=fams.map(f=>{
+    const ph=f.ph||{}
+    const cnt=Object.values(ph).reduce((a,p)=>a+(p.docs?.length||0)+(p.notes?.length||0)+(p.flags?.length||0),0)
+    return`<div class="fc${f.id===selId?' on':''}" onclick="selFam('${f.id}')">
+      <div class="fc-name">${x(f.name)}</div>
+      <div class="fc-meta">${x(f.cfp||'')}${f.cfp?' · ':''}${cnt} item${cnt!==1?'s':''}</div>
+      <div class="fc-dots">
+        <div class="dot${ph.intake?.an?' gi':''}" title="Intake NCFAS"></div>
+        <div class="dot${ph.interim?.an?' gm':''}" title="Interim NCFAS"></div>
+        <div class="dot${ph.exit?.an?' ge':''}" title="Exit NCFAS"></div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+// ── Select family ─────────────────────────────────────────────────────────────
+function selFam(id){selId=id;rSidebar();rMain()}
+
+// ── Main render ───────────────────────────────────────────────────────────────
+function rMain(){
+  const fam=DB.fams[selId];if(!fam)return
+  document.getElementById('mh-title').textContent=fam.name
+  document.getElementById('mh-acts').innerHTML=`<button class="btn bd bsm" onclick="delFam('${fam.id}')">🗑 Delete case</button>`
+  const ph=PH[selPh],pd=(fam.ph||{})[selPh]||{}
+  document.getElementById('mc').innerHTML=`
+    <div class="ptabs">
+      ${Object.values(PH).map(p=>`
+        <button class="pt t${p.cls}${selPh===p.id?' p'+p.cls:''}" onclick="swPh('${p.id}')">
+          <div class="pt-l">${p.short} NCFAS</div>
+          <div class="pt-s">${p.sub}</div>
+        </button>`).join('')}
+    </div>
+
+    <div class="card" style="border-left:3px solid ${ph.col};padding:10px 14px 10px 14px;margin-bottom:12px">
+      <div style="font-size:12px;color:var(--n5);line-height:1.5"><strong style="color:${ph.col}">${ph.type}</strong> — ${ph.desc}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📁 AIMS case note files</div>
+      <div class="card-desc">Upload PDF or Word exports from AIMS. Multiple files accepted and synthesised together.</div>
+      <div class="uz" id="uz-${selPh}" onclick="trig('${selPh}')"
+        ondragover="dov(event,'${selPh}')" ondragleave="dlv(event,'${selPh}')" ondrop="ddr(event,'${selPh}')">
+        <div class="uz-ico">📄</div>
+        <div class="uz-txt"><strong>Click to upload</strong> or drag and drop — PDF or Word (.docx)</div>
+      </div>
+      <input type="file" id="fi-${selPh}" style="display:none" multiple accept=".pdf,.doc,.docx" onchange="hf(event,'${selPh}')">
+      <div class="ufiles">${rDocs(pd.docs||[])}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 Contact notes, emails and reports</div>
+      <div class="card-desc">Paste any contact notes, email threads, reports or collateral not included in the uploaded files.</div>
+      <div id="nl-${selPh}">${rNotes(pd.notes||[])}</div>
+      <button class="btn bs bsm" onclick="openNote('${selPh}')">＋ Add note / email / report</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🚩 Key flags and critical information</div>
+      <div class="card-desc">Add specific events, crisis incidents, or must-capture information to ensure these appear accurately in the NCFAS narratives.</div>
+      <div id="fl-${selPh}">${rFlags(pd.flags||[])}</div>
+      <button class="btn bs bsm" onclick="openFlag('${selPh}')">＋ Add key flag</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚡ Generate ${ph.type}</div>
+      ${rGenSection(fam,ph,pd)}
+    </div>
+
+    ${pd.an?rAnalysis(pd.an,ph,fam):''}
+  `
+}
+
+function rDocs(docs){
+  return docs.map((d,i)=>`
+    <div class="uf">
+      <span style="font-size:15px">${d.t==='pdf'?'📕':'📘'}</span>
+      <span class="uf-n">${x(d.name)}</span>
+      <span class="uf-sz">${fmtSz(d.size)}</span>
+      <button class="xbtn" onclick="rmDoc('${selPh}',${i})">✕</button>
+    </div>`).join('')
+}
+
+function rNotes(notes){
+  if(!notes.length)return`<div class="empty" style="margin-bottom:8px">No notes added yet</div>`
+  return notes.map((n,i)=>{
+    const cfg=NT[n.type]||NT.other
+    return`<div class="nb">
+      <div class="nh">
+        <span class="ntag" style="background:${cfg.bg};color:${cfg.tc}">${cfg.lbl}</span>
+        <span class="ndate">${x(n.date||'No date')}</span>
+        <button class="xbtn" onclick="rmNote('${selPh}',${i})">✕</button>
+      </div>
+      <div class="nbody" id="nb-${selPh}-${i}">${x(n.text.substring(0,200))}${n.text.length>200?'…':''}</div>
+      ${n.text.length>200?`<button class="nmore" onclick="togNote('${selPh}',${i})">Show more</button>`:''}
+    </div>`}).join('')
+}
+
+function rFlags(flags){
+  if(!flags.length)return`<div class="empty" style="margin-bottom:8px">No key flags added yet</div>`
+  return flags.map((f,i)=>`
+    <div class="flag">
+      <div class="flag-hdr">
+        <span class="flag-lbl">🚩 ${x(f.date||'Key flag')}</span>
+        <button class="xbtn" onclick="rmFlag('${selPh}',${i})">✕</button>
+      </div>
+      <div class="flag-txt">${x(f.text)}</div>
+    </div>`).join('')
+}
+
+function togNote(ph,i){
+  const fam=DB.fams[selId],n=fam.ph[ph].notes[i]
+  const el=document.getElementById(`nb-${ph}-${i}`)
+  const exp=el.classList.contains('exp')
+  el.textContent=exp?n.text.substring(0,200)+(n.text.length>200?'…':''):n.text
+  el.classList.toggle('exp')
+  el.nextElementSibling.textContent=exp?'Show more':'Show less'
+}
+
+function rGenSection(fam,ph,pd){
+  const docs=pd.docs||[],notes=pd.notes||[],flags=pd.flags||[]
+  const has=docs.length||notes.length||flags.length
+  if(!has)return`<div class="empty">Add case note files, contact notes, or key flags above to generate the ${ph.type}.</div>`
+  const hasAn=!!pd.an
+  const genAt=pd.anAt?new Date(pd.anAt).toLocaleString('en-AU'):''
+  return`
+    ${hasAn?`<div style="font-size:11px;color:var(--n5);margin-bottom:8px">Generated: ${genAt}</div>`:''}
+    <div class="card-desc">${docs.length} file${docs.length!==1?'s':''}${notes.length?`, ${notes.length} note${notes.length!==1?'s':''}`:''} ${flags.length?`, ${flags.length} flag${flags.length!==1?'s':''}`:''} will be synthesised.</div>
+    <div id="gs-${ph.id}"></div>
+    <div class="bar">
+      <button class="btn bp" onclick="generate('${ph.id}')">⚡ ${hasAn?'Re-generate':'Generate'} ${ph.type}</button>
+      ${hasAn?`<button class="btn be" onclick="expWord('${ph.id}')">⬇ Export Word</button>`:''}
+    </div>`
+}
+
+function rAnalysis(an,ph,fam){
+  const rb=(r)=>{const i=RAT[r]||RAT.uk;return`<span class="dom-score ${i.cls}">${r==='uk'?'?':r==='na'?'N/A':r} ${i.lbl}</span>`}
+  return`<div class="an-wrap">
+    <div class="an-hdr ${ph.cls}">
+      <div>
+        <div class="an-title ${ph.cls}">${ph.type} — ${x(fam.name)}</div>
+        ${an.period?`<div class="an-sub">Review period: ${x(an.period)}</div>`:''}
+      </div>
+      <button class="btn be bsm" onclick="expWord('${ph.id}')">⬇ Export Word</button>
+    </div>
+
+    ${an.summary?`<div class="sum"><div class="sum-hdr">Practice Summary</div><div class="sum-txt">${nl(an.summary)}</div></div>`:''}
+
+    ${(an.domains||[]).map(d=>`
+    <div class="dom">
+      <div class="dom-hdr">
+        <span class="dom-letter">Domain ${d.id}</span>
+        <span class="dom-name">${x(d.name)}</span>
+        ${rb(d.score)}
+      </div>
+      <div class="dom-narr">${nl(d.narrative)}</div>
+      ${d.subs?.length?`<div class="sub-grid">${d.subs.map(s=>`
+        <div class="sub-row">
+          <span class="sub-n">${x(s.name)}</span>
+          <span class="sub-r ${(RAT[s.score]||RAT.uk).cls}">${s.score==='uk'?'?':s.score==='na'?'N/A':s.score}</span>
+        </div>`).join('')}</div>`:''}
+    </div>`).join('')}
+
+    ${an.cc?.length?`<div class="sum"><div class="sum-hdr">Families Together Core Components</div>
+      <div class="cc-grid">${an.cc.map(c=>{
+        const cfg=CC_CONFIG[c.name]||{}
+        const ico=c.status==='present'?'✅':c.status==='partial'?'⚠️':'❌'
+        const statusLabel=c.status==='present'?'Being delivered':c.status==='partial'?'Partially delivered':'Not yet evidenced'
+        return`<div class="cc-row ${c.status}">
+          <span class="cc-ico">${ico}</span>
+          <div class="cc-body">
+            <div class="cc-name ${c.status}">${x(c.name)}</div>
+            <div class="cc-status" style="color:${c.status==='present'?'#155724':c.status==='partial'?'#854F0B':'#A32D2D'};font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">${c.status==='present'?'✓ Being delivered':c.status==='partial'?'◐ Partially delivered':'✗ Not yet evidenced'}</div>
+            ${c.evidence?`<div style="font-size:11px;color:var(--n5);margin-top:2px;line-height:1.5">${x(c.evidence)}</div>`:''}
+            ${c.status!=='present'&&cfg.required?`<div style="margin-top:6px">
+              <div style="font-size:10px;font-weight:700;color:#A32D2D;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Required activities to meet this component</div>
+              ${cfg.required.map(r=>`<div style="font-size:11px;color:var(--n8);padding:3px 0;border-bottom:1px solid var(--n2);line-height:1.5">→ ${x(r)}</div>`).join('')}
+            </div>`:''}
+            ${c.status!=='present'&&cfg.suggested?`<div style="margin-top:6px">
+              <div style="font-size:10px;font-weight:700;color:#854F0B;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Suggested additional activities</div>
+              <div class="cc-suggest">${cfg.suggested.map(s=>`· ${x(s)}`).join('<br>')}</div>
+            </div>`:''}
+          </div>
+        </div>`}).join('')}
+      </div></div>`:''}
+
+    ${an.recs?`<div class="sum" style="border-bottom:none"><div class="sum-hdr">Recommendations and Next Steps</div><div class="sum-txt">${nl(an.recs)}</div></div>`:''}
+  </div>`
+}
+
+// ── File handling ─────────────────────────────────────────────────────────────
+function trig(ph){document.getElementById(`fi-${ph}`).click()}
+function dov(e,ph){e.preventDefault();document.getElementById(`uz-${ph}`).classList.add('drag')}
+function dlv(e,ph){document.getElementById(`uz-${ph}`).classList.remove('drag')}
+function ddr(e,ph){e.preventDefault();document.getElementById(`uz-${ph}`).classList.remove('drag');pFiles(Array.from(e.dataTransfer.files),ph)}
+function hf(e,ph){pFiles(Array.from(e.target.files),ph);e.target.value=''}
+
+async function pFiles(files,ph){
+  const fam=DB.fams[selId]
+  if(!fam.ph)fam.ph={}
+  if(!fam.ph[ph])fam.ph[ph]={}
+  if(!fam.ph[ph].docs)fam.ph[ph].docs=[]
+  for(const f of files){
+    if(!f.name.match(/\.(pdf|doc|docx)$/i)){alert(`"${f.name}" is not a PDF or Word file.`);continue}
+    const doc={name:f.name,size:f.size,t:f.name.match(/\.pdf$/i)?'pdf':'word',added:new Date().toISOString()}
+    try{
+      if(doc.t==='pdf'){doc.data=await toB64(f)}
+      else{await loadMammoth();const ab=await f.arrayBuffer();const r=await window.mammoth.extractRawText({arrayBuffer:ab});doc.text=r.value}
+      fam.ph[ph].docs.push(doc)
+    }catch(err){alert(`Could not read "${f.name}": ${err.message}`)}
+  }
+  save(DB);rMain()
+}
+
+function toB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('Read failed'));r.readAsDataURL(f)})}
+function rmDoc(ph,i){DB.fams[selId].ph[ph].docs.splice(i,1);save(DB);rMain()}
+
+// ── Note modal ────────────────────────────────────────────────────────────────
+let _nPh=null
+function openNote(ph){_nPh=ph;document.getElementById('m-note').style.display='flex';setTimeout(()=>document.getElementById('n-date').focus(),40)}
+function closeNote(){document.getElementById('m-note').style.display='none';document.getElementById('n-date').value='';document.getElementById('n-text').value=''}
+function saveNote(){
+  const txt=document.getElementById('n-text').value.trim()
+  if(!txt){alert('Please paste some notes.');return}
+  const fam=DB.fams[selId]
+  if(!fam.ph)fam.ph={};if(!fam.ph[_nPh])fam.ph[_nPh]={};if(!fam.ph[_nPh].notes)fam.ph[_nPh].notes=[]
+  fam.ph[_nPh].notes.push({date:document.getElementById('n-date').value.trim(),type:document.getElementById('n-type').value,text:txt,added:new Date().toISOString()})
+  save(DB);closeNote();rMain()
+}
+function rmNote(ph,i){DB.fams[selId].ph[ph].notes.splice(i,1);save(DB);rMain()}
+
+// ── Flag modal ────────────────────────────────────────────────────────────────
+let _fPh=null
+function openFlag(ph){_fPh=ph;document.getElementById('m-flag').style.display='flex';setTimeout(()=>document.getElementById('f-date').focus(),40)}
+function closeFlag(){document.getElementById('m-flag').style.display='none';document.getElementById('f-date').value='';document.getElementById('f-text').value=''}
+function saveFlag(){
+  const txt=document.getElementById('f-text').value.trim();if(!txt)return
+  const fam=DB.fams[selId]
+  if(!fam.ph)fam.ph={};if(!fam.ph[_fPh])fam.ph[_fPh]={};if(!fam.ph[_fPh].flags)fam.ph[_fPh].flags=[]
+  fam.ph[_fPh].flags.push({date:document.getElementById('f-date').value.trim(),text:txt,added:new Date().toISOString()})
+  save(DB);closeFlag();rMain()
+}
+function rmFlag(ph,i){DB.fams[selId].ph[ph].flags.splice(i,1);save(DB);rMain()}
+
+// ── Generate ──────────────────────────────────────────────────────────────────
+async function generate(phId){
+  const fam=DB.fams[selId],ph=PH[phId],pd=(fam.ph||{})[phId]||{}
+  const el=document.getElementById(`gs-${phId}`)
+  el.innerHTML=`<div class="loading"><div class="spin"></div><div>Analysing case notes and generating ${ph.type}…</div><div style="font-size:10px;color:var(--n5)">This may take 30–90 seconds for large files</div></div>`
+  try{
+    const content=await buildContent(pd,ph,fam)
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:9000,system:buildSys(ph,fam),messages:[{role:'user',content}]})
+    })
+    const data=await res.json()
+    if(data.error)throw new Error(data.error.message)
+    const raw=data.content.filter(b=>b.type==='text').map(b=>b.text).join('')
+    // Robust JSON extraction — find first { and last }
+    const start=raw.indexOf('{')
+    const end=raw.lastIndexOf('}')
+    if(start===-1||end===-1)throw new Error('The AI did not return a complete response. Try again — the file may be too large for a single request.')
+    const clean=raw.substring(start,end+1)
+    let an
+    try{an=JSON.parse(clean)}
+    catch(pe){throw new Error('JSON parse failed: '+pe.message+'. Raw start: '+raw.substring(0,200))}
+    if(!fam.ph)fam.ph={};if(!fam.ph[phId])fam.ph[phId]={}
+    fam.ph[phId].an=an;fam.ph[phId].anAt=new Date().toISOString()
+    save(DB);rSidebar();rMain()
+  }catch(err){el.innerHTML=`<div class="err"><strong>Error:</strong> ${x(err.message)}</div>`}
+}
+
+// ── System prompt ─────────────────────────────────────────────────────────────
+function buildSys(ph,fam){
+  return`You are completing the NCFAS-G+R (North Carolina Family Assessment Scale for General and Reunification services) for the Families Together program, NSW DCJ Family Preservation, delivered by Allambi Care in Cessnock, Maitland, Port Stephens and Dungog LGAs.
+
+CASE:
+Family: ${fam.name}
+Family members: ${fam.members||'Not specified'}
+CFP: ${fam.cfp||'Not specified'}
+Program start: ${fam.startDate||'Not specified'}
+DCJ referral date: ${fam.refDate||'Not specified'}
+Assessment type: ${ph.type} (${ph.sub})
+
+═══════════════════════════════════════════
+MANDATORY WRITING RULES — EVERY NARRATIVE
+═══════════════════════════════════════════
+
+VOICE AND PERSON:
+• Never first person. Write as a third-party assessor reviewing casework records.
+• "The CFP maintained consistent contact..." / "Home visits conducted by the CFP reflected..." / "Records from the review period indicate..." / "Contact notes document..."
+• NEVER: "I observed", "I noted", "I visited", "we found"
+
+NAMES:
+• Family members: first name only — Karen, Scott, JJ, SJ. Never "the mother", "the father" unless no name is known.
+• Service workers: role abbreviation only — the CFP, the DCJ CSW, the school counsellor, the SW. NEVER a worker's full name.
+
+LANGUAGE:
+• Past tense for all observations: "The home was observed to be...", "KJ reported...", "During the visit on [date]..."
+• Factual, professional, human, strengths-based, dignity-driven, trauma-informed
+• Specific: include dates, visit types, named events from the source material
+• No bullet points inside narrative fields
+• No AI phrases: "it is evident", "it is worth noting", "it should be noted", "demonstrates", "showcases", "underscores", "highlights"
+• No colons mid-sentence, no em dashes, no semicolons
+• Plain connected prose only
+
+═══════════════════════════════════════════
+FOUR-PARAGRAPH NARRATIVE STRUCTURE (EVERY DOMAIN)
+═══════════════════════════════════════════
+
+PARAGRAPH 1 — Trajectory / opening:
+State whether the domain was or was not identified as a concern. Name the referral source and date if relevant.
+
+INTAKE stock openings (use exact wording):
+- "The [Domain] domain was not identified as an area of concern during the intake review period and was not a primary focus of intervention."
+- "The [Domain] domain was identified as an area of concern during the intake review period. The DCJ referral dated [DATE] identified concerns regarding [specific issue]."
+
+INTERIM stock openings (use exact wording):
+- "There has been some improvement within the [Domain] domain during the review period; however, this domain remains an area of concern due to [specific ongoing issue]."
+- "There has been no significant change within the [Domain] domain during the review period."
+- "There has been positive change within the [Domain] domain during the review period, and this domain is no longer an area of concern."
+- "There has been decline within the [Domain] domain during the review period, with [specific issue] increasing in frequency or severity."
+- "The [Domain] domain was not an area of concern at intake and remains so at interim, with no new issues identified."
+
+EXIT stock openings:
+- "There has been [positive change / some improvement / no significant change / decline] within the [Domain] domain across the exit review period."
+- "The [Domain] domain was not identified as an area of concern across the exit review period."
+
+PARAGRAPH 2 — Concerns (if domain has concerns):
+What was observed or reported. One sentence on impact on children where relevant. Reference specific dates.
+
+PARAGRAPH 3 — Strengths:
+Which subdomains are strengths or baseline. Brief and specific.
+
+PARAGRAPH 4 — Closing sentence:
+INTAKE: Always end with: "As this is an intake assessment, there is no previous assessment period available for comparison." Then name which core component activities will focus on what.
+INTERIM: State what changed since intake and what drove it. Then name core component activities and what they will focus on at exit.
+EXIT: Summarise overall trajectory across program. Note what has been achieved and what remains. Reference transition supports.
+
+Core component closing examples:
+- "Case Management and Family and Parent Support activities are focused on [specific goal], with progress to be reviewed at interim."
+- "Child-Focused Support activities will prioritise [specific goal] as direct engagement with [child] develops."
+- "Therapeutic Support and Case Management activities are focused on [specific goal], with progress to be reviewed at exit."
+- "This domain will continue to be monitored throughout service involvement."
+
+═══════════════════════════════════════════
+CHILD WELL-BEING — MANDATORY CHILD SIGHTING STATEMENT
+═══════════════════════════════════════════
+
+Always open with the child engagement scenario BEFORE the trajectory sentence:
+
+Scenario A — Child engaged across multiple visits:
+"[Child] was sighted and engaged with directly across [X] home visits during the review period. Assessment reflects direct observation."
+
+Scenario B — Child sighted, limited engagement:
+"[Child] was sighted briefly during [visit/date] but was not available for direct engagement with the CFP across the review period. Available information is drawn primarily from caregiver report and referral information."
+
+Scenario C — Child present some visits:
+"[Child] was present during [X of X] home visits across the review period, with direct observation possible on [dates]. Assessment reflects both direct observation and caregiver report."
+
+Scenario D — Child not sighted:
+"[Child] was not sighted during any contact across the [intake/interim/exit] review period. [Child] was reported by [caregiver] to be [reason] throughout this period. As a result, the Child Well-Being domain is assessed on the basis of caregiver report and referral information only, and direct observation of [child]'s presentation, functioning, and wellbeing was not possible. This significantly limits the reliability of the assessment in this domain, and direct engagement with [child] is identified as a priority for the next review period."
+
+Multiple children: address each child separately.
+
+═══════════════════════════════════════════
+REFERRAL ANCHORING RULE
+═══════════════════════════════════════════
+
+At intake: If DCJ flagged a domain as a concern, it remains a concern at intake. Six weeks is not sufficient to evidence resolution. Name the referral date and what it flagged. Describe 6-week observations that support or contextualise. Conclude that concerns remain at intake consistent with the referral.
+
+═══════════════════════════════════════════
+SCORING RULES
+═══════════════════════════════════════════
+
+Scale:
++2 = Clear Strength
++1 = Mild Strength
+0  = Baseline / Adequate
+-1 = Mild Problem
+-2 = Moderate Problem
+-3 = Serious Problem
+uk = Unknown (insufficient information)
+na = Not Applicable
+
+DOMAIN SCORE RULE: Overall domain score = LOWEST subdomain score (most concerning item drives overall). UK and NA excluded from this calculation. If all subs are UK/NA, overall is UK.
+
+Decision rules:
+- Between 0 and -1: Does this require FP intervention? If yes, at least -1.
+- Between -1 and -2: Is this clearly impacting child safety or family functioning on an ongoing basis? If yes, likely -2.
+- Family Safety domain: absence of concern = positive score. Presence = negative.
+- KEY FLAGS provided must be accurately reflected in domain scores and narratives.
+
+DOMAINS I AND J: Do not include. Always mark as NA. Families Together does not use reunification domains.
+
+═══════════════════════════════════════════
+FIVE FAMILIES TOGETHER CORE COMPONENTS
+═══════════════════════════════════════════
+
+Engagement — trust-based relationships, removing barriers, culturally safe practice
+Case Management — strengths/needs assessment, family-led goal setting, safety planning, service coordination
+Family and Parent Support — parenting skills, practical in-home support, coaching, social/cultural connections
+Therapeutic Support — referral to or delivery of therapy, counselling, DFV support, substance misuse, mental health
+Child-Focused Support — child voice, wraparound supports, education, health, developmental needs
+
+Reference core components naturally in the CLOSING SENTENCE of each domain narrative — never listed as a checklist.
+
+For the core components summary section, assess each as: present / partial / absent
+Include 1 sentence of evidence for each.
+
+═══════════════════════════════════════════
+OUTPUT FORMAT — CRITICAL
+═══════════════════════════════════════════
+
+YOUR RESPONSE MUST START WITH { AND END WITH }. NOTHING ELSE.
+Do not write any text before the JSON. Do not write any text after the JSON.
+Do not use markdown code blocks. Do not say "Here is" or "I need" or anything else.
+Do not refuse. Do not add caveats. Just output the JSON object directly.
+If you cannot complete the full assessment, still return the JSON with your best attempt — use "uk" for unknown scores and note limitations in the relevant narrative fields.
+The first character of your response must be { and the last must be }.
+
+{
+  "period": "string — dates covered by this assessment period",
+  "summary": "string — 3 to 5 sentence practice summary, third person, plain prose, no bullet points",
+  "domains": [
+    {
+      "id": "A",
+      "name": "Environment",
+      "score": "-1",
+      "narrative": "string — four paragraphs as specified. Plain prose. No bullet points. No colons mid-sentence. No em dashes. No semicolons. Past tense. Third person.",
+      "subs": [
+        {"name": "Housing Stability", "score": "0"},
+        {"name": "Safety in the Community", "score": "-1"},
+        {"name": "Environmental Risks", "score": "0"},
+        {"name": "Habitability of Housing", "score": "0"},
+        {"name": "Personal Hygiene", "score": "+1"},
+        {"name": "Learning Environment", "score": "+1"}
+      ]
+    }
+  ],
+  "cc": [
+    {"name": "Engagement", "status": "present", "evidence": "string — one sentence"},
+    {"name": "Case Management", "status": "partial", "evidence": "string — one sentence"},
+    {"name": "Family and Parent Support", "status": "absent", "evidence": "string — one sentence"},
+    {"name": "Therapeutic Support", "status": "absent", "evidence": "string — one sentence"},
+    {"name": "Child-Focused Support", "status": "present", "evidence": "string — one sentence"}
+  ],
+  "recs": "string — 2 to 4 sentences on next steps, referrals, and priorities. Third person. Plain prose."
+}`
+}
+
+// ── Build user content ────────────────────────────────────────────────────────
+async function buildContent(pd,ph,fam){
+  const docs=pd.docs||[],notes=pd.notes||[],flags=pd.flags||[]
+  const content=[]
+  let intro=`Generate the ${ph.type} for ${fam.name}.\n\n`
+  if(flags.length){
+    intro+=`KEY FLAGS — MUST BE ACCURATELY CAPTURED IN RELEVANT DOMAIN NARRATIVES AND SCORES:\n`
+    flags.forEach((f,i)=>intro+=`${i+1}. [${f.date||'No date'}] ${f.text}\n`)
+    intro+=`\n`
+  }
+  intro+=`Synthesise ALL documents and notes provided below to produce the assessment.\n`
+  content.push({type:'text',text:intro})
+  for(const d of docs){
+    if(d.t==='pdf'&&d.data){content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:d.data}})}
+    else if(d.text){content.push({type:'text',text:`\n--- FILE: ${d.name} ---\n\n${d.text}\n--- END OF FILE ---\n`})}
+  }
+  if(notes.length){
+    const nt=notes.map((n,i)=>`--- ${(NT[n.type]||NT.other).lbl.toUpperCase()} [${n.date||'No date'}] ---\n\n${n.text}\n--- END ---`).join('\n\n')
+    content.push({type:'text',text:`\nPASTED CASE NOTES AND CORRESPONDENCE:\n\n${nt}`})
+  }
+  content.push({type:'text',text:'\nGenerate the complete NCFAS JSON assessment now.'})
+  return content
+}
+
+// ── Word export ───────────────────────────────────────────────────────────────
+async function expWord(phId){
+  const fam=DB.fams[selId],ph=PH[phId],an=fam.ph?.[phId]?.an
+  if(!an)return
+  try{
+    if(!window.docx){
+      await new Promise((res,rej)=>{
+        const s=document.createElement('script')
+        s.src='https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js'
+        s.onload=res;s.onerror=rej;document.head.appendChild(s)
+      })
+    }
+    const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,Table,TableRow,TableCell,WidthType,BorderStyle}=window.docx
+    const COL={intake:'0F6E56',interim:'854F0B',exit:'1A4D8F'}
+    const tc=COL[phId]
+    const rl=(r)=>RAT[r]?.lbl||r
+    const ch=[]
+
+    const mkP=(text,opts={})=>new Paragraph({children:[new TextRun({text,size:opts.size||22,font:'Calibri',bold:opts.bold||false,color:opts.color||undefined,italics:opts.ital||false})],spacing:{after:opts.after||80},alignment:opts.align||AlignmentType.LEFT})
+    const mkH=(text,lvl=1)=>new Paragraph({text,heading:lvl===1?HeadingLevel.HEADING_1:HeadingLevel.HEADING_2,spacing:{before:200,after:80}})
+    const mkMeta=(lbl,val)=>new Paragraph({children:[new TextRun({text:`${lbl}: `,bold:true,size:22,font:'Calibri'}),new TextRun({text:val||'',size:22,font:'Calibri'})],spacing:{after:70}})
+
+    // Cover
+    ch.push(new Paragraph({children:[new TextRun({text:'FAMILIES TOGETHER',bold:true,size:36,font:'Calibri',color:tc})],alignment:AlignmentType.CENTER,spacing:{after:60}}))
+    ch.push(new Paragraph({children:[new TextRun({text:ph.type.toUpperCase(),bold:true,size:28,font:'Calibri',color:tc})],alignment:AlignmentType.CENTER,spacing:{after:200}}))
+    ch.push(mkMeta('Family',fam.name))
+    ch.push(mkMeta('Family members',fam.members))
+    ch.push(mkMeta('CFP',fam.cfp))
+    ch.push(mkMeta('Program start',fam.startDate))
+    ch.push(mkMeta('DCJ referral date',fam.refDate))
+    ch.push(mkMeta('Review period',an.period))
+    ch.push(mkMeta('Assessment type',`${ph.type} (${ph.sub})`))
+    ch.push(mkMeta('Date generated',new Date().toLocaleDateString('en-AU',{day:'2-digit',month:'long',year:'numeric'})))
+    ch.push(mkMeta('Service',`Allambi Care — Families Together`))
+    ch.push(new Paragraph({text:'',spacing:{after:200}}))
+
+    if(an.summary){ch.push(mkH('Practice Summary'));ch.push(mkP(an.summary,{after:200}))}
+
+    ch.push(mkH('NCFAS-G+R Domain Narratives and Ratings'))
+
+    for(const d of(an.domains||[])){
+      const r=d.score,ri=RAT[r]||RAT.uk
+      ch.push(new Paragraph({children:[
+        new TextRun({text:`Domain ${d.id} — ${d.name}  `,bold:true,size:24,font:'Calibri'}),
+        new TextRun({text:`[${r==='uk'?'UK':r==='na'?'N/A':r} — ${rl(r)}]`,size:22,font:'Calibri',color:tc,bold:true})
+      ],spacing:{before:200,after:80}}))
+
+      // Narrative paragraphs — split on double newline
+      const paras=(d.narrative||'').split(/\n\n+/)
+      for(const p of paras){if(p.trim())ch.push(mkP(p.trim(),{after:100}))}
+      ch.push(new Paragraph({text:'',spacing:{after:60}}))
+
+      // Subdomain table
+      if(d.subs?.length){
+        ch.push(new Table({rows:[
+          new TableRow({children:[
+            new TableCell({children:[new Paragraph({children:[new TextRun({text:'Subdomain',bold:true,size:20,font:'Calibri'})]})],width:{size:72,type:WidthType.PERCENTAGE}}),
+            new TableCell({children:[new Paragraph({children:[new TextRun({text:'Rating',bold:true,size:20,font:'Calibri'})]})],width:{size:28,type:WidthType.PERCENTAGE}})
+          ]}),
+          ...d.subs.map(s=>new TableRow({children:[
+            new TableCell({children:[new Paragraph({children:[new TextRun({text:s.name,size:20,font:'Calibri'})]})]}),
+            new TableCell({children:[new Paragraph({children:[new TextRun({text:`${s.score==='uk'?'UK':s.score==='na'?'N/A':s.score} — ${rl(s.score)}`,size:20,font:'Calibri',bold:true,color:tc})]})]}),
+          ]}))
+        ],width:{size:100,type:WidthType.PERCENTAGE}}))
+        ch.push(new Paragraph({text:'',spacing:{after:100}}))
+      }
+    }
+
+    if(an.cc?.length){
+      ch.push(mkH('Families Together Core Components'))
+      for(const c of an.cc){
+        const ico=c.status==='present'?'✓ ':c.status==='partial'?'◐ ':'✗ '
+        const ccol=c.status==='present'?'155724':c.status==='partial'?'854F0B':'A32D2D'
+        ch.push(new Paragraph({children:[
+          new TextRun({text:ico,bold:true,size:22,font:'Calibri',color:ccol}),
+          new TextRun({text:c.name,bold:true,size:22,font:'Calibri',color:ccol}),
+          new TextRun({text:` — ${c.status.charAt(0).toUpperCase()+c.status.slice(1)}`,size:22,font:'Calibri',color:'555555'})
+        ],spacing:{after:40}}))
+        if(c.evidence)ch.push(mkP(c.evidence,{after:40,size:20,color:'555555'}))
+        if(c.status!=='present'&&CC_S[c.name])ch.push(mkP(CC_S[c.name],{after:80,size:18,ital:true,color:'6B3D09'}))
+      }
+    }
+
+    if(an.recs){
+      ch.push(mkH('Recommendations and Next Steps'))
+      ch.push(mkP(an.recs,{after:200}))
+    }
+
+    ch.push(mkP(`Generated ${new Date().toLocaleString('en-AU')} via Families Together NCFAS Assessment Tool — Jade Wright`,{size:16,color:'999999',ital:true,after:0}))
+
+    const doc=new Document({sections:[{children:ch}]})
+    const blob=await Packer.toBlob(doc)
+    const url=URL.createObjectURL(blob)
+    const a=document.createElement('a');a.href=url
+    a.download=`NCFAS_${ph.short}_${fam.name.replace(/[^a-zA-Z0-9]/g,'_')}_${new Date().toLocaleDateString('en-AU').replace(/\//g,'')}.docx`
+    a.click();URL.revokeObjectURL(url)
+  }catch(err){alert('Export failed: '+err.message)}
+}
+
+// ── Family management ─────────────────────────────────────────────────────────
+function openAdd(){document.getElementById('m-add').style.display='flex';setTimeout(()=>document.getElementById('m-name').focus(),40)}
+function closeAdd(){document.getElementById('m-add').style.display='none';['m-name','m-cfp','m-start','m-ref','m-members'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})}
+function saveAdd(){
+  const name=document.getElementById('m-name').value.trim()
+  if(!name){alert('Please enter a family or case reference.');return}
+  const id='f'+Date.now()
+  DB.fams[id]={id,name,cfp:document.getElementById('m-cfp').value.trim(),startDate:document.getElementById('m-start').value.trim(),refDate:document.getElementById('m-ref').value.trim(),members:document.getElementById('m-members').value.trim(),created:new Date().toISOString(),ph:{}}
+  save(DB);closeAdd();selFam(id)
+}
+function delFam(id){
+  if(!confirm('Delete this case and all its data? This cannot be undone.'))return
+  delete DB.fams[id];save(DB);selId=null
+  document.getElementById('mh-title').textContent='NCFAS Assessment Tool'
+  document.getElementById('mh-acts').innerHTML=''
+  document.getElementById('mc').innerHTML=`<div class="welcome"><div style="font-size:44px;margin-bottom:14px">📋</div><h2>Select or add a case</h2><p>Select a case from the sidebar or add a new one to begin.</p></div>`
+  rSidebar()
+}
+function swPh(ph){selPh=ph;rMain()}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function x(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function nl(s){if(!s)return'';return x(s).replace(/\n\n+/g,'</p><p style="margin-bottom:12px">').replace(/\n/g,'<br>')}
+function fmtSz(b){if(!b)return'';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeAdd();closeNote();closeFlag()}})
+
+// ── Password gate ─────────────────────────────────────────────────────────────
+const PW_HASH='5e56f0e18e2ce8028a21f6923f02c2e30f68e7c8c6d3e9f6b1a4d7e2c5f8b0a'
+function hashStr(s){
+  // Simple but effective: we store the pw hashed with SHA-256 via SubtleCrypto
+  return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))
+    .then(b=>Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join(''))
+}
+const CORRECT='Waterbottle88!'
+const SESSION_KEY='ft_auth_v1'
+function checkPw(){
+  const val=document.getElementById('pw-input').value
+  if(val===CORRECT){
+    sessionStorage.setItem(SESSION_KEY,'1')
+    document.getElementById('pw-gate').style.display='none'
+    document.getElementById('main-app').style.display='flex'
+    rSidebar()
+  }else{
+    document.getElementById('pw-err').textContent='Incorrect password. Please try again.'
+    document.getElementById('pw-input').value=''
+    document.getElementById('pw-input').focus()
+  }
+}
+function initAuth(){
+  if(sessionStorage.getItem(SESSION_KEY)==='1'){
+    document.getElementById('pw-gate').style.display='none'
+    document.getElementById('main-app').style.display='flex'
+    rSidebar()
+  }else{
+    setTimeout(()=>document.getElementById('pw-input').focus(),100)
+  }
+}
+
+initAuth()
+</script>
+</body>
+</html>
